@@ -1,59 +1,96 @@
-// import { DomAndEvents } from "./DomAndEvents";
+import { DomElements } from "./DomElements";
 
 function app() {
-  // const domAndEvents = new DomAndEvents();
-  // domAndEvents.onClickCreateButton();
-  // domAndEvents.onClickUpdateButton();
-  // domAndEvents.onClickRemoveButton();
-  // domAndEvents.onLoadPage();
-  // domAndEvents.onClickRow();
-  // domAndEvents.onClickStatus();
-  const ws = new WebSocket("ws://localhost:8081/ws");
+  // chatSend?.addEventListener("click", (event) => {
+  //   event.preventDefault();
+  //   const message = chatMessage.value;
+  //
+  //   if (!message.trim()) return;
+  //
+  //   ws.send(message);
+  //
+  //   chatMessage.value = "";
+  // });
 
-  const chat = document.querySelector(".chat");
-  const chatMessage = document.querySelector(".chat-message");
-  const chatSend = document.querySelector(".chat-send");
+  const input = document?.querySelector('input[name="username"]');
+  let username;
 
-  chatSend.addEventListener("click", (event) => {
+  document.querySelector(".form")?.addEventListener("submit", (event) => {
     event.preventDefault();
-    const message = chatMessage.value;
+    if (!input.value.trim()) return;
 
-    if (!message.trim()) return;
+    username = input.value.trim();
 
-    ws.send(message);
+    const sendListener = (event) => {
+      event.preventDefault();
+      const chatMessage = document.querySelector(".chat-message");
+      const message = chatMessage.value;
 
-    chatMessage.value = "";
-  });
+      if (!message.trim()) return;
 
-  ws.addEventListener("open", (event) => {
-    console.log(event);
+      ws.send(JSON.stringify({ type: "message", message }));
 
-    console.log("we open");
-  });
+      chatMessage.value = "";
+    };
 
-  ws.addEventListener("close", (event) => {
-    console.log(event);
+    const ws = new WebSocket("ws://localhost:8081/ws");
 
-    console.log("we close");
-  });
+    ws.addEventListener("open", (event) => {
+      console.log(event);
 
-  ws.addEventListener("message", (event) => {
-    console.log(event);
+      ws.send(JSON.stringify({ type: "new-user", username: username }));
 
-    const data = JSON.parse(event.data);
-    const { chat: messages } = data;
-
-    messages.forEach((message) => {
-      chat.appendChild(document.createTextNode(message + "\n"));
+      console.log("we open");
     });
 
-    console.log("we message");
-  });
+    ws.addEventListener("close", (event) => {
+      console.log(event);
 
-  ws.addEventListener("error", (event) => {
-    console.log(event);
+      console.log("we close");
+    });
 
-    console.log("we error");
+    ws.addEventListener("message", (event) => {
+      console.log(event);
+
+      const data = JSON.parse(event.data);
+
+      switch (data.type) {
+        case "new-user-response":
+          if (data.success === "allowed") {
+            DomElements.chatCreator(data.username);
+            document
+              .querySelector(".chat-send")
+              .addEventListener("click", sendListener);
+          } else {
+            DomElements.showTooltip("Такой пользователь уже существует", input);
+          }
+          break;
+        case "message":
+          if (data.chat) {
+            const chat = document.querySelector(".chat");
+            if (!chat) return;
+            const { chat: messages } = data;
+
+            messages.forEach((message) => {
+              chat.appendChild(document.createTextNode(message + "\n"));
+            });
+          }
+          break;
+        default:
+          break;
+      }
+      //
+      //
+      // const chatSend =
+
+      console.log("we message");
+    });
+
+    ws.addEventListener("error", (event) => {
+      console.log(event);
+
+      console.log("we error");
+    });
   });
 }
 

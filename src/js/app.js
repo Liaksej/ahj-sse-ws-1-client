@@ -25,7 +25,7 @@ function app() {
       }
     };
 
-    const ws = new WebSocket("ws://localhost:8081/ws");
+    const ws = new WebSocket("wss://ahj-sse-ws-1-server.onrender.com");
 
     ws.addEventListener("open", (event) => {
       console.log(event);

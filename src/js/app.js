@@ -1,17 +1,8 @@
 import { DomElements } from "./DomElements";
+import { User } from "./User";
+import { NewMessage } from "./NewMessage";
 
 function app() {
-  // chatSend?.addEventListener("click", (event) => {
-  //   event.preventDefault();
-  //   const message = chatMessage.value;
-  //
-  //   if (!message.trim()) return;
-  //
-  //   ws.send(message);
-  //
-  //   chatMessage.value = "";
-  // });
-
   const input = document?.querySelector('input[name="username"]');
   let username;
 
@@ -28,7 +19,7 @@ function app() {
 
       if (!message.trim()) return;
 
-      ws.send(JSON.stringify({ type: "message", message }));
+      ws.send(JSON.stringify(new NewMessage(message)));
 
       chatMessage.value = "";
     };
@@ -38,7 +29,7 @@ function app() {
     ws.addEventListener("open", (event) => {
       console.log(event);
 
-      ws.send(JSON.stringify({ type: "new-user", username: username }));
+      ws.send(JSON.stringify(new User("new-user", username)));
 
       console.log("we open");
     });
@@ -55,14 +46,20 @@ function app() {
       const data = JSON.parse(event.data);
 
       switch (data.type) {
-        case "new-user-response":
-          if (data.success === "allowed") {
+        case "user-response":
+          if (data.status === "allowed") {
             DomElements.chatCreator(data.username);
+
             document
               .querySelector(".chat-send")
               .addEventListener("click", sendListener);
-          } else {
+            if (data.users) {
+              DomElements.userListCreator(data.users);
+            }
+          } else if (data.status === "denied") {
             DomElements.showTooltip("Такой пользователь уже существует", input);
+          } else if (data.status === "exit") {
+            DomElements.showTooltip("Что-то пошло не так", input);
           }
           break;
         case "message":
@@ -72,10 +69,7 @@ function app() {
             const messages = data.chat;
 
             messages.forEach((message) => {
-              const elementForMessage = document.createElement("div");
-              elementForMessage.classList.add("message");
-              elementForMessage.textContent = message;
-              chat.appendChild(elementForMessage);
+              DomElements.messageBody(message, chat);
             });
           }
           break;

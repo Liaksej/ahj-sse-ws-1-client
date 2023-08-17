@@ -69,19 +69,19 @@ function app() {
           if (data.chat) {
             const chat = document.querySelector(".chat");
             if (!chat) return;
-            const { chat: messages } = data;
+            const messages = data.chat;
 
             messages.forEach((message) => {
-              chat.appendChild(document.createTextNode(message + "\n"));
+              const elementForMessage = document.createElement("div");
+              elementForMessage.classList.add("message");
+              elementForMessage.textContent = message;
+              chat.appendChild(elementForMessage);
             });
           }
           break;
         default:
           break;
       }
-      //
-      //
-      // const chatSend =
 
       console.log("we message");
     });

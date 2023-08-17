@@ -37,6 +37,8 @@ function app() {
     ws.addEventListener("close", (event) => {
       console.log(event);
 
+      ws.send(JSON.stringify(new User("outgoing-user", username)));
+
       console.log("we close");
     });
 
@@ -47,19 +49,28 @@ function app() {
 
       switch (data.type) {
         case "user-response":
-          if (data.status === "allowed") {
-            DomElements.chatCreator(data.username);
+          switch (data.status) {
+            case "allowed":
+              DomElements.chatCreator(data.username);
 
-            document
-              .querySelector(".chat-send")
-              .addEventListener("click", sendListener);
-            if (data.users) {
-              DomElements.userListCreator(data.users);
-            }
-          } else if (data.status === "denied") {
-            DomElements.showTooltip("Такой пользователь уже существует", input);
-          } else if (data.status === "exit") {
-            DomElements.showTooltip("Что-то пошло не так", input);
+              DomElements.userListHandler(data.status, data.users);
+
+              document
+                .querySelector(".chat-send")
+                .addEventListener("click", sendListener);
+              break;
+            case "denied":
+              DomElements.showTooltip(
+                "Такой пользователь уже существует",
+                input,
+              );
+              break;
+            case "outgoing-user":
+              DomElements.userListHandler(data.status, data.username);
+              break;
+            case "incoming-user":
+              DomElements.userListHandler(data.status, data.username);
+              break;
           }
           break;
         case "message":
@@ -84,6 +95,12 @@ function app() {
       console.log(event);
 
       console.log("we error");
+    });
+
+    window.addEventListener("beforeunload", (event) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(new User("outgoing-user", username)));
+      }
     });
   });
 }

@@ -28,6 +28,7 @@ function app() {
     };
 
     const ws = new WebSocket("wss://ahj-sse-ws-1-server.onrender.com");
+    // const ws = new WebSocket("ws://localhost:80");
 
     ws.addEventListener("open", (event) => {
       console.log(event);
@@ -116,12 +117,6 @@ function app() {
 
     ws.addEventListener("pong", () => {
       hasRespondedToPing = true;
-    });
-
-    window.addEventListener("beforeunload", () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(new User("outgoing-user", username)));
-      }
     });
   });
 }

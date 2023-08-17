@@ -82,7 +82,7 @@ export class DomElements {
         break;
       case "outgoing-user":
         const elementForDelete = Array.from(
-          userList.querySelectorAll(".user"),
+          userList?.querySelectorAll(".user"),
         ).find((element) => element.textContent === userAppearance);
 
         elementForDelete.remove();

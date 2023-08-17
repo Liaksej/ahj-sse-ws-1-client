@@ -3,8 +3,10 @@ import { User } from "./User";
 import { NewMessage } from "./NewMessage";
 
 function app() {
-  const input = document?.querySelector('input[name="username"]');
   let username;
+  let hasRespondedToPing = false;
+
+  const input = document?.querySelector('input[name="username"]');
 
   document.querySelector(".form")?.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -37,8 +39,6 @@ function app() {
 
     ws.addEventListener("close", (event) => {
       console.log(event);
-
-      ws.send(JSON.stringify(new User("outgoing-user", username)));
 
       console.log("we close");
     });
@@ -103,6 +103,19 @@ function app() {
       console.log(event);
 
       console.log("we error");
+    });
+
+    ws.addEventListener("ping", () => {
+      if (!hasRespondedToPing) {
+        ws.close();
+      } else {
+        hasRespondedToPing = false;
+        ws.pong();
+      }
+    });
+
+    ws.addEventListener("pong", () => {
+      hasRespondedToPing = true;
     });
 
     window.addEventListener("beforeunload", () => {

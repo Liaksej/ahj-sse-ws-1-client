@@ -19,7 +19,7 @@ function app() {
 
       if (!message.trim()) return;
 
-      ws.send(JSON.stringify(new NewMessage(message)));
+      ws.send(JSON.stringify(new NewMessage(username, message)));
 
       chatMessage.value = "";
     };
@@ -53,7 +53,7 @@ function app() {
             case "allowed":
               DomElements.chatCreator(data.username);
 
-              DomElements.userListHandler(data.status, data.users);
+              DomElements.userListHandler(data.status, data.users, username);
 
               document
                 .querySelector(".chat-send")
@@ -66,10 +66,10 @@ function app() {
               );
               break;
             case "outgoing-user":
-              DomElements.userListHandler(data.status, data.username);
+              DomElements.userListHandler(data.status, data.username, username);
               break;
             case "incoming-user":
-              DomElements.userListHandler(data.status, data.username);
+              DomElements.userListHandler(data.status, data.username, username);
               break;
           }
           break;
@@ -80,7 +80,13 @@ function app() {
             const messages = data.chat;
 
             messages.forEach((message) => {
-              DomElements.messageBody(message, chat);
+              const user = message.user === username ? "You" : message.user;
+              DomElements.messageBody(
+                user,
+                message.date,
+                message.message,
+                chat,
+              );
             });
           }
           break;

@@ -13,15 +13,16 @@ function app() {
     username = input.value.trim();
 
     const sendListener = (event) => {
-      event.preventDefault();
-      const chatMessage = document.querySelector(".chat-message");
-      const message = chatMessage.value;
+      if (event.key === "Enter") {
+        const chatMessage = document.querySelector(".chat-message");
+        const message = chatMessage.value;
 
-      if (!message.trim()) return;
+        if (!message.trim()) return;
 
-      ws.send(JSON.stringify(new NewMessage(username, message)));
+        ws.send(JSON.stringify(new NewMessage(username, message)));
 
-      chatMessage.value = "";
+        chatMessage.value = "";
+      }
     };
 
     const ws = new WebSocket("ws://localhost:8081/ws");
@@ -56,8 +57,8 @@ function app() {
               DomElements.userListHandler(data.status, data.users, username);
 
               document
-                .querySelector(".chat-send")
-                .addEventListener("click", sendListener);
+                .querySelector(".chat-message")
+                .addEventListener("keydown", sendListener);
               break;
             case "denied":
               DomElements.showTooltip(
@@ -80,14 +81,15 @@ function app() {
             const messages = data.chat;
 
             messages.forEach((message) => {
-              const user = message.user === username ? "You" : message.user;
               DomElements.messageBody(
-                user,
+                message.user,
                 message.date,
                 message.message,
                 chat,
+                username,
               );
             });
+            DomElements.scrollChatToBottom();
           }
           break;
         default:
@@ -103,7 +105,7 @@ function app() {
       console.log("we error");
     });
 
-    window.addEventListener("beforeunload", (event) => {
+    window.addEventListener("beforeunload", () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(new User("outgoing-user", username)));
       }

@@ -1,31 +1,48 @@
 .chat-container {
   display: flex;
+  align-items: flex-start;
   width: 100%;
-  /*flex-wrap: wrap;*/
-  /*flex-direction: row;*/
 }
 
 .main-part {
-  width: calc(80% - 2px);
+  max-width: calc(93% - 2px);
+  flex-grow: 2;
   height: 400px;
   border: 1px solid black;
-  border-left: none;
+  border-radius: 15px;
+  padding: 15px;
 }
 
 .chat {
-  height: 370px;
+  display: flex;
+  height: 350px;
+  margin-bottom: 15px;
   overflow: auto;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .userlist {
-  width: calc(20% - 2px);
-  height: 400px;
+  min-width: 70px;
   border: 1px solid black;
+  border-right: none;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 15px;
+  border-top-right-radius: unset;
+  border-bottom-right-radius: unset;
   overflow: auto;
+  flex-grow: 0;
 }
 
 .chat-message {
-  width: calc(70% - 2px);
+  font-size: 16px;
+  padding: 3px;
+  width: calc(100% - 5px);
+  border: 1px black solid;
+  border-radius: 5px;
+  box-shadow: none;
 }
 
 .popup_window,
@@ -81,4 +98,25 @@
   background: #fff;
   box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.1);
   z-index: 999;
+}
+
+.message {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: whitesmoke;
+  max-width: 90%;
+}
+
+.user {
+  padding: 5px;
+}
+
+.credentials {
+  font-size: 14px;
+  color: dimgray;
+}
+
+.text {
+  padding-top: 8px;
 }

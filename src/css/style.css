@@ -27,6 +27,7 @@ body {
   margin-bottom: 15px;
   overflow: auto;
   align-items: flex-start;
+  justify-content: flex-end;
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;

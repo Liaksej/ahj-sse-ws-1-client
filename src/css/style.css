@@ -26,8 +26,7 @@ body {
   display: flex;
   margin-bottom: 15px;
   align-items: flex-start;
-  margin-top: auto;
-  flex-direction: column;
+  flex-direction: column-reverse;
   overflow: auto;
   gap: 10px;
   flex-grow: 1;

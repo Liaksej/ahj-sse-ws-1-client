@@ -62,7 +62,7 @@ export class DomElements {
       elementForMessage.firstElementChild.style.color = "red";
       elementForMessage.firstElementChild.style.textAlign = "right";
     }
-    chat.appendChild(elementForMessage);
+    chat.prepend(elementForMessage);
   }
 
   static userListHandler(status, userData, username) {
